@@ -12,11 +12,12 @@ class CompanyController extends Controller
         return view('company')->with('company',$company);
     }
 
-    public function update(request $request){
+    public function update(request $request, $id){
 
         $validation = $request->validate([
+            'name' => 'required|string',
             'phone' => 'required|numeric|digits:10',
-            'email' => 'required|email|unique:companies,id',
+            'email' => 'required|email|unique:companies,email,'.$id,
             'address' => 'required|string',
         ]);
 

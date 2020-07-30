@@ -23,7 +23,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::middleware(['web','auth'])->group(function(){
     Route::get('company','CompanyController@show')->name('company.show');
-    Route::put('company','CompanyController@update')->name('company.update');
+    Route::put('company/{company}','CompanyController@update')->name('company.update');
     Route::get('roles','RoleController@layout')->name('role.layout');
     Route::apiResource('/api/v1/roles','RoleController');
 });

@@ -19,10 +19,8 @@
                         <input type="text" class="form-control" id="description" name="description" aria-describedby="descriptionHelp">
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
-                    <button type="button" class="btn btn-secondary">Cancelar</button>
-                    @if(\Session::has('status'))
-                        <span class="text-success"> Registro actualizado </span>
-                    @endif
+                    <button id="closeForm" type="button" class="btn btn-secondary">Cancelar</button>
+                    <div id="errors" class="alert-danger mt-2"></div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -90,17 +88,30 @@
 
             let form = $(this).serializeArray()
 
-            let url = '{{ route('roles.store') }}'
+            let url = "{{ url('api/v1/roles')  }}"
+
+            //adecuación para editar
+            let id = document.getElementById("id");
+
+            if (id && id.value) {
+                form.push({"name":"_method", "value":'PUT'});
+                url = url+"/"+id.value
+            }
+            //fin adecuación para editar
 
             $.ajax({
                 type : "post",
                 url : url,
                 data: form,
                 success: function(data){
-                    console.log(data)
+                    alert(data.status);
+                    clearForm();
+                    closeModal();
+                    reloadData()
                 },
-                error: function(error){
-                    console.log(error)
+                error: function(data){
+                    let error = $.parseJSON(data.responseText);
+                    showErrors(error.errors);
                 }
             })
 
@@ -108,25 +119,78 @@
         })
 
         $(document).on('click','button.delete-role',function(){
-            let id = $(this).data('id');
-            let url = '{{ url('api/v1/roles')  }}'+'/'+id;
 
-            $.ajax({
-                type : "post",
-                url : url,
-                dataType: 'JSON',
-                data: {
-                    'id': id,
-                    '_method': 'DELETE',
-                    '_token': '{{ csrf_token()  }}'
-                },
-                success: function(data){
-                    console.log(data)
-                },
-                error: function(error){
-                    console.log(error)
-                }
-            })
+            if (confirm('¿Desea realmente eliminar el registro?')) {
+                let id =  $(this).data('id');
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url('api/v1/roles')  }}"+"/"+id,
+                    dataType: "JSON",
+                    data: {
+                        "id": id,
+                        "_method": 'DELETE',
+                        "_token": "{{ csrf_token() }}",
+                    },
+                    success: function(data)
+                    {
+                        alert(data.status);
+                        reloadData();
+                    },
+                    error: function(error){
+                        alert('ha ocurrido un error')
+                    }
+                });
+            }
+
+
         })
+
+        //se ejecuta cuando se da click en el botón editar
+        $(document).on('click','button.edit-role',function(){
+            fillForm($(this).data('role'));
+            openModal();
+        });
+
+        //se ejecuta cuando se da click en el botón eliminar
+        $(document).on('click','button#closeForm',function(){
+            clearForm();
+            closeModal();
+        });
+
+        //función que recarga los datos del datatable
+        function reloadData(){
+            $("#roleTable").DataTable().ajax.reload();
+        }
+
+        //funcion que permite visualizar errores
+        function showErrors(errors){
+            let message = '<span class="p-2">';
+            $.each(errors, function (key,value) { message += value + "\n"; });
+            message += '</span>';
+            $('#errors').html(message);
+        }
+
+        function fillForm(data){
+            document.getElementById('id').value = data.id;
+            document.getElementById('description').value = data.description;
+        }
+
+        function clearForm(){
+            document.getElementById('id').value = '';
+            $('#roleForm')[0].reset();
+            $('#errors').html('');
+        }
+
+        //funciones de ayuda para el formulario modal
+        function closeModal(){ $("#roleModal").modal('hide'); }
+
+        function openModal(){ $("#roleModal").modal('show'); }
+
+        $(function(){
+            $('#roleModal').on('hide.bs.modal', function (event) {
+                clearForm();
+            })
+        });
     </script>
 @endsection

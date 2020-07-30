@@ -63,7 +63,15 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validation = $request->validate([
+            'description' => 'required|string|unique:roles,description,'.$id,
+        ]);
+
+        $role = Role::findOrFail($id);
+        $role->description = $request->description;
+        $role->save();
+
+        return ['status'=>'registro editado exitosamente'];
     }
 
     /**
@@ -74,8 +82,8 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $roles = Role::findOrFail($id);
-        $roles->delete();
+        $role = Role::findOrFail($id);
+        $role->delete();
 
         return ['status'=>'registro eliminado exitosamente'];
     }
