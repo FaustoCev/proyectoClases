@@ -35,6 +35,9 @@
                             <input type="text" class="form-control" id="address" name="address" value="{{ $company->address }}" aria-describedby="emailHelp">
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
+                        @if(\Session::has('status'))
+                            <span class="text-success"> Registro actualizado </span>
+                        @endif
                     </form>
                 </div>
             </div>

@@ -16,7 +16,8 @@ class CompanyController extends Controller
 
         $validation = $request->validate([
             'phone' => 'required|numeric|digits:10',
-            //'email' => 'required|email|unique:companies,id',
+            'email' => 'required|email|unique:companies,id',
+            'address' => 'required|string',
         ]);
 
         $company = Company::findOrFail(1);
@@ -26,6 +27,7 @@ class CompanyController extends Controller
         $company->address = $request->address;
         $company->save();
 
-        redirect( 'comapny.show')->with('status','registro actualizado');
+        return redirect( 'company')->with('status','registro actualizado');
+
     }
 }

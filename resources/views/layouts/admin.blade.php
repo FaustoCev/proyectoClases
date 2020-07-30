@@ -66,6 +66,7 @@
                             <div class="list-group">
                                 <a href="{{ route('home') }}" @if( Route::getCurrentRoute()->getName() == 'home' ) class="list-group-item active" @else class="list-group-item" @endif > Inicio </a>
                                 <a href="{{ route('company.show') }}" @if( Route::getCurrentRoute()->getName() == 'company.show' ) class="list-group-item active" @else class="list-group-item" @endif > Empresa </a>
+                                <a href="{{ route('role.layout') }}" @if( Route::getCurrentRoute()->getName() == 'role.layout' ) class="list-group-item active" @else class="list-group-item" @endif > Roles </a>
                             </div>
                         </div>
                     </div>

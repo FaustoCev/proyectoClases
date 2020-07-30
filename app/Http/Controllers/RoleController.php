@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Role;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+
+    public function layout(){
+        return view('role');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +19,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        $roles = Role::get(['id','description']);
+        return response()->json(['data'=>$roles]);
     }
 
     /**
@@ -24,7 +31,16 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validation = $request->validate([
+            'description' => 'required|string|unique:roles,description',
+        ]);
+
+        $role = new Role();
+        $role->description = $request->description;
+        $role->save();
+
+        return ['status'=>'registro agregado exitosamente'];
     }
 
     /**
@@ -58,6 +74,9 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $roles = Role::findOrFail($id);
+        $roles->delete();
+
+        return ['status'=>'registro eliminado exitosamente'];
     }
 }
