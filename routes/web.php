@@ -26,4 +26,6 @@ Route::middleware(['web','auth'])->group(function(){
     Route::put('company/{company}','CompanyController@update')->name('company.update');
     Route::get('roles','RoleController@layout')->name('role.layout');
     Route::apiResource('/api/v1/roles','RoleController');
+    Route::get('users','UserController@layout')->name('users.layout');
+    Route::apiResource('/api/v1/users','UserController');
 });
