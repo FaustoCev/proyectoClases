@@ -25,7 +25,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'pivot',
     ];
 
     /**
@@ -39,5 +39,17 @@ class User extends Authenticatable
 
     public function company(){
         return $this->belongsTo('App\Company');
+    }
+
+    public function roles(){
+        return $this->belongsToMany('App\Role');
+    }
+
+    public function isAdmin(){
+        $isAdmin = $this->whereHas('roles', function($query){
+            $query->where('description','Administrador');
+        })->count();
+
+        return $isAdmin == 1;
     }
 }

@@ -36,7 +36,7 @@
 
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ Auth::user()->name }} <span class="caret"></span>
+                                {{ Auth::user()->name }} - {{ Auth::user()->isAdmin()  }} <span class="caret"></span>
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -64,10 +64,15 @@
                         <div class="card-body">
                             <div class="card-title">Menú</div>
                             <div class="list-group">
-                                <a href="{{ route('home') }}" @if( Route::getCurrentRoute()->getName() == 'home' ) class="list-group-item active" @else class="list-group-item" @endif > Inicio </a>
-                                <a href="{{ route('company.show') }}" @if( Route::getCurrentRoute()->getName() == 'company.show' ) class="list-group-item active" @else class="list-group-item" @endif > Empresa </a>
-                                <a href="{{ route('role.layout') }}" @if( Route::getCurrentRoute()->getName() == 'role.layout' ) class="list-group-item active" @else class="list-group-item" @endif > Roles </a>
-                                <a href="{{ route('users.layout') }}" @if( Route::getCurrentRoute()->getName() == 'users.layout' ) class="list-group-item active" @else class="list-group-item" @endif > Usuarios </a>
+                                @if( Auth::user()->isAdmin() )
+                                    <a href="{{ route('home') }}" @if( Route::getCurrentRoute()->getName() == 'home' ) class="list-group-item active" @else class="list-group-item" @endif > Inicio </a>
+                                    <a href="{{ route('company.show') }}" @if( Route::getCurrentRoute()->getName() == 'company.show' ) class="list-group-item active" @else class="list-group-item" @endif > Empresa </a>
+                                    <a href="{{ route('role.layout') }}" @if( Route::getCurrentRoute()->getName() == 'role.layout' ) class="list-group-item active" @else class="list-group-item" @endif > Roles </a>
+                                    <a href="{{ route('users.layout') }}" @if( Route::getCurrentRoute()->getName() == 'users.layout' ) class="list-group-item active" @else class="list-group-item" @endif > Usuarios </a>
+                                    <a href="" @if( Route::getCurrentRoute()->getName() == 'posts.layout' ) class="list-group-item active" @else class="list-group-item" @endif > Publicaciones </a>
+                                @else
+                                    <a href="" @if( Route::getCurrentRoute()->getName() == 'posts.layout' ) class="list-group-item active" @else class="list-group-item" @endif > Publicaciones </a>
+                                @endif
                             </div>
                         </div>
                     </div>

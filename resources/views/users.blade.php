@@ -34,6 +34,12 @@
                         <label for="password_confirmation">Confirmar Contraseña</label>
                         <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
                     </div>
+                    <div class="form-group">
+                        <label for="roles">Asignar roles</label>
+                        <select class="form-control" name="roles[]" id="roles" multiple>
+                            <option>Seleccione el valor</option>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                     <button id="closeForm" type="button" class="btn btn-secondary">Cancelar</button>
                     <div id="errors" class="alert-danger mt-2"></div>
@@ -86,6 +92,30 @@
 @endsection
 @section('scripts')
     <script type="text/javascript">
+
+        $(document).ready(function(){
+
+            let url = '{{ route('roles.index') }}'
+
+            $.ajax({
+                type : "get",
+                url : url,
+                dataType: 'JSON',
+                success: function(response){
+                    let roles = response.data
+                    $("#roles").empty();
+                    roles.forEach(function(role){
+                        $("#roles").append(" <option value='"+role.id+"'> "+role.description+" </option> ");
+                    })
+                },
+                error: function(data){
+                    let error = $.parseJSON(data.responseText);
+                    showErrors(error.errors);
+                }
+            })
+
+        })
+
         $('#userTable').DataTable({
             "ajax": '{{ route('users.index') }}',
             columns: [
@@ -196,6 +226,12 @@
             document.getElementById('name').value = data.name;
             document.getElementById('email').value = data.email;
             document.getElementById('phone').value = data.phone;
+
+            let roles = data.roles.map(function(role){
+                return role.id
+            });
+
+            $('#roles').val(roles);
         }
 
         function clearForm(){

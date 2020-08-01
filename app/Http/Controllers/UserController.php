@@ -5,11 +5,17 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\User;
 use Illuminate\Http\Request;
+use Auth;
 
 class UserController extends Controller
 {
 
     public function layout(){
+
+        if( !Auth::user()->isAdmin() ){
+            return response()->json(['data'=>'Acceso no autorizado']);
+        }
+
         return view('users');
     }
 
@@ -20,8 +26,14 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::get();
+        if( !Auth::user()->isAdmin() ){
+            return response()->json(['data'=>'Acceso no autorizado']);
+        }
+
+        $users = User::with(['roles:id'])->get();
         return response()->json(['data'=>$users]);
+
+
     }
 
     /**
@@ -38,6 +50,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string|max:10',
             'password' => 'required|confirmed|min:8',
+            'roles' => 'required|array|min:1'
         ]);
 
         $user = new User();
@@ -48,6 +61,8 @@ class UserController extends Controller
         $company = Company::find(1);
         $user->company()->associate($company);
         $user->save();
+
+        $user->roles()->sync($request->roles);
 
         return ['status'=>'registro agregado exitosamente'];
     }
@@ -77,6 +92,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,'.$id,
             'phone' => 'required|string|max:10',
             'password' => 'nullable|confirmed|min:8',
+            'roles' => 'required|array|min:1'
         ]);
 
         $user = User::findOrFail($id);
@@ -95,6 +111,8 @@ class UserController extends Controller
 
         $user->save();
 
+        $user->roles()->sync($request->roles);
+
         return ['status'=>'registro editado exitosamente'];
     }
 
@@ -107,6 +125,9 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+
+        $user->roles()->sync([]);
+
         $user->delete();
 
         return ['status'=>'registro eliminado exitosamente'];
